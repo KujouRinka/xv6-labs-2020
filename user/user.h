@@ -1,3 +1,8 @@
+#ifndef __USER_H__
+#define __USER_H__
+
+#include "kernel/types.h"
+
 struct stat;
 struct rtcdate;
 
@@ -40,3 +45,5 @@ void free(void*);
 int atoi(const char*);
 int memcmp(const void *, const void *, uint);
 void *memcpy(void *, const void *, uint);
+
+#endif

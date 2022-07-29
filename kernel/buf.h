@@ -1,3 +1,5 @@
+#ifndef __KERNEL_BUF_H__
+#define __KERNEL_BUF_H__
 struct buf {
   int valid;   // has data been read from disk?
   int disk;    // does disk "own" buf?
@@ -10,3 +12,4 @@ struct buf {
   uchar data[BSIZE];
 };
 
+#endif
