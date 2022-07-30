@@ -14,10 +14,25 @@ strcpy(char *s, const char *t)
   return os;
 }
 
+char *
+strncpy(char *dst, const char *src, int n) {
+  char *s = dst;
+  while (n--)
+    *s++ = *src++;
+  return dst;
+}
+
 int
 strcmp(const char *p, const char *q)
 {
   while(*p && *p == *q)
+    p++, q++;
+  return (uchar)*p - (uchar)*q;
+}
+
+int
+strncmp(const char *p, const char *q, int n) {
+  while (n-- && *p == *q)
     p++, q++;
   return (uchar)*p - (uchar)*q;
 }
@@ -30,6 +45,23 @@ strlen(const char *s)
   for(n = 0; s[n]; n++)
     ;
   return n;
+}
+
+char *
+strcat(char *dst, const char *src) {
+  char *s = dst + strlen(dst);
+  const char *cp = src;
+  while ((*s++ = *cp++) != '\0') {}
+  return dst;
+}
+
+char *
+strncat(char *dst, const char *src, int n) {
+  char *s = dst + strlen(dst);
+  const char *cp = src;
+  while (n--)
+    *s++ = *cp++;
+  return dst;
 }
 
 void*
