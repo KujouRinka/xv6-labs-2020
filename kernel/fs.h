@@ -4,6 +4,8 @@
 #ifndef __KERNEL_FS_H__
 #define __KERNEL_FS_H__
 
+#include "kernel/types.h"
+
 #define ROOTINO  1   // root i-number
 #define BSIZE 1024  // block size
 

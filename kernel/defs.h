@@ -1,6 +1,9 @@
 #ifndef __KERNEL_DEFS_H__
 #define __KERNEL_DEFS_H__
 
+#include "kernel/types.h"
+#include "kernel/riscv.h"
+
 struct buf;
 struct context;
 struct file;
