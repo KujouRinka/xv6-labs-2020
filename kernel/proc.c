@@ -293,6 +293,9 @@ fork(void)
 
   pid = np->pid;
 
+  // maintain var for syscall trace
+  np->trace_mask = p->trace_mask;
+
   np->state = RUNNABLE;
 
   release(&np->lock);
