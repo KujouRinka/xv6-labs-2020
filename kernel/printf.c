@@ -132,3 +132,19 @@ printfinit(void)
   initlock(&pr.lock, "pr");
   pr.locking = 1;
 }
+
+void
+backtrace(void)
+{
+  uint64 fp = r_fp();
+  uint64 pg_top = PGROUNDUP(fp);
+  uint64 pg_bottom = PGROUNDDOWN(fp);
+
+  if (pg_top <= pg_bottom)
+    panic("pg_top should greater than pg_bottom");
+  while (fp < pg_top && fp > pg_bottom) {
+    uint64 last_call = (uint64)*(uint64 *)(fp - 8);
+    printf("%p\n", last_call);
+    fp = (uint64)*(uint64 *)(fp - 16);
+  }
+}
