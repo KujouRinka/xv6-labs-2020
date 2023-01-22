@@ -16,10 +16,18 @@ MIT 6.828/6.S081 Lab Assignments of 2020 Fall.
 - [x] Print a page table
 - [x] A kernel page table per process
 - [x] Simplify copyin/copyinstr
-- Traps
-- Lazy allocation
-- Copy on-write
-- Multithreading
+- [Traps](https://pdos.csail.mit.edu/6.828/2020/labs/traps.html)
+- [x] RISC-V assembly
+- [x] Backtrace
+- [x] Alarm
+- [Lazy allocation](https://pdos.csail.mit.edu/6.828/2020/labs/lazy.html)
+- [x] Eliminate allocation from sbrk()
+- [x] Lazy allocation
+- [x] Lazytests and Usertests
+- [Copy on-write](https://pdos.csail.mit.edu/6.828/2020/labs/cow.html)
+- [x] Implement copy-on write
+- [Multithreading](https://pdos.csail.mit.edu/6.828/2020/labs/thread.html)
+- [x] Using threads
 - Lock
 - File system
 - mmap
