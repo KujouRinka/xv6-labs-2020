@@ -28,7 +28,8 @@ MIT 6.828/6.S081 Lab Assignments of 2020 Fall.
 - [x] Implement copy-on write
 - [Multithreading](https://pdos.csail.mit.edu/6.828/2020/labs/thread.html)
 - [x] Uthread: switching between threads
-- [ ] Using threads
+- [x] Using threads
+- [x] Barrier
 - Lock
 - File system
 - mmap
