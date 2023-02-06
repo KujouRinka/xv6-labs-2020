@@ -30,12 +30,13 @@ kinit()
   // freerange(end, (void*)PHYSTOP);
   uint64 each = (PHYSTOP - (uint64) end) / NCPU;
   int i = 0;
+  uint64 e = (uint64) end;
   for (; i < NCPU - 1; ++i) {
     initlock(&kmem[i].lock, "kmem");
-    freerange(end + i * each, end + (i + 1) * each);
+    freerange((void *) (e + i * each), (void *) (e + (i + 1) * each));
   }
   initlock(&kmem[i].lock, "kmem");
-  freerange(end + i * each, (void *) PHYSTOP);
+  freerange((void *)(end + i * each), (void *) PHYSTOP);
 }
 
 void
