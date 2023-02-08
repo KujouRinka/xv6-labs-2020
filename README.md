@@ -32,7 +32,7 @@ MIT 6.828/6.S081 Lab Assignments of 2020 Fall.
 - [x] Barrier
 - [Lock](https://pdos.csail.mit.edu/6.828/2020/labs/lock.html)
 - [x] Memory allocator
-- [ ] Buffer cache
+- [x] Buffer cache
 - File system
 - mmap
 - network driver
