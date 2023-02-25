@@ -15,6 +15,7 @@
 #include "sleeplock.h"
 #include "file.h"
 #include "fcntl.h"
+#include "buf.h"
 
 // Fetch the nth word-sized system call argument as a file descriptor
 // and return both the descriptor and the corresponding struct file.
@@ -322,6 +323,32 @@ sys_open(void)
     return -1;
   }
 
+  if(ip->type == T_SYMLINK && !(omode & O_NOFOLLOW)) {
+    char next_path[MAXPATH];
+    for (int i = 0; ; ++i) {
+      if (i > 10) {
+        ip = 0;
+        break;
+      }
+      if (readi(ip, 0, (uint64)next_path, 0, MAXPATH) != MAXPATH) {
+        ip = 0;
+        break;
+      }
+      iunlockput(ip);
+      if ((ip = namei(next_path)) == 0) {
+        ip = 0;
+        break;
+      }
+      ilock(ip);
+      if (ip->type == T_FILE || ip->type == T_DIR)
+        break;
+    }
+    if (ip == 0) {
+      end_op();
+      return -1;
+    }
+  }
+
   if((f = filealloc()) == 0 || (fd = fdalloc(f)) < 0){
     if(f)
       fileclose(f);
@@ -482,5 +509,31 @@ sys_pipe(void)
     fileclose(wf);
     return -1;
   }
+  return 0;
+}
+
+uint64
+sys_symlink(void) {
+  char target[MAXPATH];
+  char path[MAXPATH];
+  if (argstr(0, target, MAXPATH) < 0 || argstr(1, path, MAXPATH) < 0)
+    return -1;
+
+  struct inode *path_ip;
+  begin_op();
+  path_ip = create(path, T_SYMLINK, 0, 0);
+  if (path_ip == 0) {
+    end_op();
+    return -1;
+  }
+  if (writei(path_ip, 0, (uint64)target, 0, MAXPATH) != MAXPATH) {
+    iunlockput(path_ip);
+    end_op();
+    return -1;
+  }
+
+  iupdate(path_ip);
+  iunlockput(path_ip);
+  end_op();
   return 0;
 }
