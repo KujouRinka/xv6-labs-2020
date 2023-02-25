@@ -35,6 +35,6 @@ MIT 6.828/6.S081 Lab Assignments of 2020 Fall.
 - [x] Buffer cache
 - [File system](https://pdos.csail.mit.edu/6.828/2020/labs/fs.html)
 - [x] Large files
-- [ ] Symbolic links
+- [x] Symbolic links
 - mmap
 - network driver
