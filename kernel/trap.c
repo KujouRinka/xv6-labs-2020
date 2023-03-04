@@ -5,6 +5,10 @@
 #include "spinlock.h"
 #include "proc.h"
 #include "defs.h"
+#include "sleeplock.h"
+#include "fs.h"
+#include "file.h"
+#include "fcntl.h"
 
 struct spinlock tickslock;
 uint ticks;
@@ -49,8 +53,9 @@ usertrap(void)
   
   // save user program counter.
   p->trapframe->epc = r_sepc();
-  
-  if(r_scause() == 8){
+
+  uint64 cause = r_scause();
+  if(cause == 8){
     // system call
 
     if(p->killed)
@@ -65,6 +70,52 @@ usertrap(void)
     intr_on();
 
     syscall();
+  } else if (cause == 13 || cause == 15) {
+    // read or write error
+    uint64 stval = r_stval();
+    int vma_idx = 0;
+    // find which vma
+    for (; vma_idx < VMA_SIZE; ++vma_idx) {
+      if (p->vmas[vma_idx].used == 0)
+        continue;
+      uint64 addr = (uint64) p->vmas[vma_idx].addr;
+      if (addr <= stval && stval < addr + p->vmas[vma_idx].length)
+        break;
+    }
+    if (vma_idx == VMA_SIZE) {
+      p->killed = 1;
+      printf("usertrap(): read/write scause");
+      printf("usertrap(): unexpected scause %p pid=%d\n", r_scause(), p->pid);
+      printf("            sepc=%p stval=%p\n", r_sepc(), r_stval());
+      goto out;
+    }
+    struct vma *v = &p->vmas[vma_idx];
+    // calculate page addr
+    stval = PGROUNDDOWN(stval);
+    // copy data from file
+    uint64 mem = (uint64) kalloc();
+    if (mem == 0) {
+      p->killed = 1;
+      goto out;
+    }
+    memset((void *) mem, 0, PGSIZE);
+    struct inode *i = v->f->ip;
+    ilock(i);
+    readi(i, 0, mem, v->offset + (stval - (uint64) v->addr), PGSIZE);
+    iunlock(i);
+    // make flag
+    int flag = PTE_V | PTE_U;
+    if (v->prot & PROT_READ)
+      flag |= PTE_R;
+    if (v->prot & PROT_WRITE)
+      flag |= PTE_W;
+    if (v->prot & PROT_EXEC)
+      flag |= PTE_X;
+    printf("mapped %p with %p\n", stval, flag);
+    if (mappages(p->pagetable, stval, PGSIZE, mem, flag) != 0) {
+      kfree((void *) mem);
+      p->killed = 1;
+    }
   } else if((which_dev = devintr()) != 0){
     // ok
   } else {
@@ -73,6 +124,7 @@ usertrap(void)
     p->killed = 1;
   }
 
+out:
   if(p->killed)
     exit(-1);
 

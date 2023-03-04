@@ -134,6 +134,9 @@ found:
   p->context.ra = (uint64)forkret;
   p->context.sp = p->kstack + PGSIZE;
 
+  // fill zero to vmas
+  memset(p->vmas, 0, sizeof(p->vmas));
+
   return p;
 }
 
@@ -301,6 +304,7 @@ fork(void)
   pid = np->pid;
 
   np->state = RUNNABLE;
+  memmove(np->vmas, p->vmas, sizeof(p->vmas));
 
   release(&np->lock);
 
