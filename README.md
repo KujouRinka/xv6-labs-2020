@@ -37,5 +37,5 @@ MIT 6.828/6.S081 Lab Assignments of 2020 Fall.
 - [x] Large files
 - [x] Symbolic links
 - [mmap](https://pdos.csail.mit.edu/6.828/2020/labs/mmap.html)
-- [ ] mmap
+- [x] mmap
 - network driver
