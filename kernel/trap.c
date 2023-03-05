@@ -111,7 +111,6 @@ usertrap(void)
       flag |= PTE_W;
     if (v->prot & PROT_EXEC)
       flag |= PTE_X;
-    printf("mapped %p with %p\n", stval, flag);
     if (mappages(p->pagetable, stval, PGSIZE, mem, flag) != 0) {
       kfree((void *) mem);
       p->killed = 1;

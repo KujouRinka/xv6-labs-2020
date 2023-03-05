@@ -305,6 +305,11 @@ fork(void)
 
   np->state = RUNNABLE;
   memmove(np->vmas, p->vmas, sizeof(p->vmas));
+  for (i = 0; i < VMA_SIZE; ++i) {
+    if (np->vmas[i].used == 0)
+      continue;
+    filedup(np->vmas[i].f);
+  }
 
   release(&np->lock);
 
@@ -360,6 +365,12 @@ exit(int status)
   begin_op();
   iput(p->cwd);
   end_op();
+
+  for (int i = 0; i < VMA_SIZE; ++i) {
+    if (p->vmas[i].used == 0)
+      continue;
+    munmap_helper(p->vmas[i].addr, p->vmas[i].length);
+  }
   p->cwd = 0;
 
   // we might re-parent a child to init. we can't be precise about
